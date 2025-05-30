@@ -17,6 +17,10 @@ public class TestBase {
     static void setup() {
         Configuration.baseUrl = "https://demoqa.com";
         RestAssured.baseURI = "https://demoqa.com";
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
+                .screenshots(true)
+                .savePageSource(true)
+        );
     }
 
     @BeforeEach
@@ -25,7 +29,6 @@ public class TestBase {
         timeout = 10000; // 10 секунд для ожидания элементов
         pageLoadTimeout = 30000; // 30 секунд для загрузки страницы
         browserSize = "1920x1080";
-        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
     }
 
     @AfterEach
