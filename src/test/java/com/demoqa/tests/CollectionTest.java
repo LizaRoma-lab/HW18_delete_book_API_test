@@ -1,8 +1,8 @@
 package com.demoqa.tests;
 
 import com.demoqa.models.*;
+import com.demoqa.specs.ApiSpec;
 import io.qameta.allure.Allure;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.OutputType;
@@ -15,10 +15,9 @@ import java.util.List;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static com.demoqa.helpers.CustomAllureListener.withCustomTemplates;
+import static com.demoqa.specs.ApiSpec.*;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 
 public class CollectionTest extends TestBase {
     @Test
@@ -30,19 +29,12 @@ public class CollectionTest extends TestBase {
 
         LoginResponseModel authResponse = step("Аутентификация пользователя", () ->
                 given()
-                        .relaxedHTTPSValidation()
-                        .filter(withCustomTemplates())
-                        .log().uri()
-                        .log().method()
-                        .log().body()
-                        .contentType(JSON)
+                        .spec(requestSpec)
                         .body(authData)
                         .when()
                         .post("/Account/v1/Login")
                         .then()
-                        .log().status()
-                        .log().body()
-                        .statusCode(200)
+                        .spec(success200Spec)
                         .extract().as(LoginResponseModel.class)
         );
 
@@ -56,20 +48,13 @@ public class CollectionTest extends TestBase {
         bookRequest.setCollectionOfIsbns(List.of(new IsbnModel(isbn)));
         step("Добавление книги в коллекцию", () -> {
             given()
-                    .relaxedHTTPSValidation()
-                    .filter(withCustomTemplates())
-                    .log().uri()
-                    .log().method()
-                    .log().body()
-                    .contentType(JSON)
+                    .spec(requestSpec)
                     .header("Authorization", "Bearer " + token)
                     .body(bookRequest)
                     .when()
                     .post("/BookStore/v1/Books")
                     .then()
-                    .log().status()
-                    .log().body()
-                    .statusCode(201);
+                    .spec(success201Spec);
         });
 
         // 3. Удаление книги из коллекции
@@ -78,20 +63,13 @@ public class CollectionTest extends TestBase {
         deleteBookRequest.setIsbn(isbn);
         step("Удаление книги из коллекции", () -> {
             given()
-                    .relaxedHTTPSValidation()
-                    .filter(withCustomTemplates())
-                    .log().uri()
-                    .log().method()
-                    .log().body()
-                    .contentType(JSON)
+                    .spec(requestSpec)
                     .header("Authorization", "Bearer " + token)
                     .body(deleteBookRequest)
                     .when()
                     .delete("/BookStore/v1/Book")
                     .then()
-                    .log().status()
-                    .log().body()
-                    .statusCode(204);
+                    .spec(success204Spec);
         });
 
         // 4. Проверка в UI, что книга удалена
