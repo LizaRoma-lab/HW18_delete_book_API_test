@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Configuration.*;
 import static com.codeborne.selenide.Configuration.browserSize;
@@ -17,6 +18,15 @@ public class TestBase {
     static void setup() {
         Configuration.baseUrl = "https://demoqa.com";
         RestAssured.baseURI = "https://demoqa.com";
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments(
+                "--user-data-dir=/tmp/chrome-profile-" + System.currentTimeMillis(),
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--disable-gpu",
+                "--window-size=1920,1080"
+        );
+        Configuration.browserCapabilities = options;
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
                 .screenshots(true)
                 .savePageSource(true)

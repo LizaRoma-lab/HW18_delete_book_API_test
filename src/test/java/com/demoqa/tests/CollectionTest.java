@@ -1,7 +1,6 @@
 package com.demoqa.tests;
 
 import com.demoqa.models.*;
-import com.demoqa.specs.ApiSpec;
 import io.qameta.allure.Allure;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
