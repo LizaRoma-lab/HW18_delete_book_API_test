@@ -3,7 +3,7 @@ package com.demoqa.models;
 import lombok.Data;
 
 @Data
-public class DeleteBookRequest {
+public class DeleteBookRequestModel {
     private String userId;
     private String isbn;
 }

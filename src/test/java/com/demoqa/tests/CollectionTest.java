@@ -1,8 +1,7 @@
 package com.demoqa.tests;
 
+import com.demoqa.models.*;
 import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
-import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
@@ -10,6 +9,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
+
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
@@ -18,42 +19,42 @@ import static com.demoqa.helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
-
 
 public class CollectionTest extends TestBase {
     @Test
     void addBookToCollection_WithDeleteBook_Test() {
         // 1. Аутентификация
-        Response authResponse = step("Аутентификация пользователя", () -> {
-            String authData = "{\"userName\": \"test123456\", \"password\": \"Test123456@\"}";
+        LoginBodyModel authData = new LoginBodyModel();
+        authData.setUserName("test123456");
+        authData.setPassword("Test123456@");
 
-            return given()
-                    .relaxedHTTPSValidation()
-                    .filter(withCustomTemplates())
-                    .log().uri()
-                    .log().method()
-                    .log().body()
-                    .contentType(JSON)
-                    .body(authData)
-                    .when()
-                    .post("/Account/v1/Login")
-                    .then()
-                    .log().status()
-                    .log().body()
-                    .statusCode(200)
-                    .extract().response();
-        });
+        LoginResponseModel authResponse = step("Аутентификация пользователя", () ->
+                given()
+                        .relaxedHTTPSValidation()
+                        .filter(withCustomTemplates())
+                        .log().uri()
+                        .log().method()
+                        .log().body()
+                        .contentType(JSON)
+                        .body(authData)
+                        .when()
+                        .post("/Account/v1/Login")
+                        .then()
+                        .log().status()
+                        .log().body()
+                        .statusCode(200)
+                        .extract().as(LoginResponseModel.class)
+        );
 
         String isbn = "9781449365035";
-        String userId = authResponse.path("userId");
-        String token = authResponse.path("token");
+        String userId = authResponse.getUserId();
+        String token = authResponse.getToken();
 
         // 2. Добавление книги в коллекцию
+        AddBookRequestModel bookRequest = new AddBookRequestModel();
+        bookRequest.setUserId(userId);
+        bookRequest.setCollectionOfIsbns(List.of(new IsbnModel(isbn)));
         step("Добавление книги в коллекцию", () -> {
-            String bookData = format("{\"userId\":\"%s\",\"collectionOfIsbns\":[{\"isbn\":\"%s\"}]}",
-                    userId, isbn);
-
             given()
                     .relaxedHTTPSValidation()
                     .filter(withCustomTemplates())
@@ -62,7 +63,7 @@ public class CollectionTest extends TestBase {
                     .log().body()
                     .contentType(JSON)
                     .header("Authorization", "Bearer " + token)
-                    .body(bookData)
+                    .body(bookRequest)
                     .when()
                     .post("/BookStore/v1/Books")
                     .then()
@@ -72,10 +73,10 @@ public class CollectionTest extends TestBase {
         });
 
         // 3. Удаление книги из коллекции
+        DeleteBookRequestModel deleteBookRequest = new DeleteBookRequestModel();
+        deleteBookRequest.setUserId(userId);
+        deleteBookRequest.setIsbn(isbn);
         step("Удаление книги из коллекции", () -> {
-            String deleteBookData = format("{\"userId\":\"%s\",\"isbn\":\"%s\"}",
-                    userId, isbn);
-
             given()
                     .relaxedHTTPSValidation()
                     .filter(withCustomTemplates())
@@ -84,7 +85,7 @@ public class CollectionTest extends TestBase {
                     .log().body()
                     .contentType(JSON)
                     .header("Authorization", "Bearer " + token)
-                    .body(deleteBookData)
+                    .body(deleteBookRequest)
                     .when()
                     .delete("/BookStore/v1/Book")
                     .then()
@@ -97,7 +98,7 @@ public class CollectionTest extends TestBase {
         step("Проверка в UI отсутствия книг", () -> {
             open("/favicon.ico");
             getWebDriver().manage().addCookie(new Cookie("userID", userId));
-            getWebDriver().manage().addCookie(new Cookie("expires", authResponse.path("expires")));
+            getWebDriver().manage().addCookie(new Cookie("expires", authResponse.getExpires()));
             getWebDriver().manage().addCookie(new Cookie("token", token));
 
             open("/profile");
@@ -107,3 +108,4 @@ public class CollectionTest extends TestBase {
         });
     }
 }
+
