@@ -7,38 +7,38 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
-import static com.codeborne.selenide.Configuration.*;
-import static com.codeborne.selenide.Configuration.browserSize;
+import java.util.Map;
+
 import static com.codeborne.selenide.Selenide.closeWebDriver;
+
 
 public class TestBase {
     @BeforeAll
     static void setup() {
+        Configuration.browserSize = "1920x1080";
         Configuration.baseUrl = "https://demoqa.com";
         RestAssured.baseURI = "https://demoqa.com";
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments(
-                "--user-data-dir=/tmp/chrome-profile-" + System.currentTimeMillis(),
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-                "--disable-gpu",
-                "--window-size=1920,1080"
-        );
-        Configuration.browserCapabilities = options;
-        SelenideLogger.addListener("AllureSelenide", new AllureSelenide()
-                .screenshots(true)
-                .savePageSource(true)
-        );
+        Configuration.pageLoadStrategy = "eager";
+
+        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("browserName", "chrome");
+        capabilities.setCapability("browserVersion", "100.0");
+        capabilities.setCapability("selenoid:options", Map.<String, Object>of(
+                "enableVNC", true,
+                "enableVideo", true
+        ));
+        Configuration.browserCapabilities = capabilities;
+
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
     }
 
     @BeforeEach
     void setUp() {
-        pageLoadStrategy = "eager"; // не ждать полной загрузки страницы
-        timeout = 10000; // 10 секунд для ожидания элементов
-        pageLoadTimeout = 30000; // 30 секунд для загрузки страницы
-        browserSize = "1920x1080";
+        Configuration.timeout = 10000;
     }
 
     @AfterEach
