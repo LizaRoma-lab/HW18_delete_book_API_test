@@ -27,8 +27,7 @@ public class CollectionTest extends TestBase {
         authData.setPassword("Test123456@");
 
         LoginResponseModel authResponse = step("Аутентификация пользователя", () ->
-                given()
-                        .spec(requestSpec)
+                given(requestSpec)
                         .body(authData)
                         .when()
                         .post("/Account/v1/Login")
@@ -43,8 +42,7 @@ public class CollectionTest extends TestBase {
 
         // 2. Очистка коллекции книг
         step("Очистка коллекции книг", () -> {
-            given()
-                    .spec(requestSpec)
+            given(requestSpec)
                     .header("Authorization", "Bearer " + token)
                     .queryParam("UserId", userId)
                     .when()
@@ -58,8 +56,7 @@ public class CollectionTest extends TestBase {
         bookRequest.setUserId(userId);
         bookRequest.setCollectionOfIsbns(List.of(new IsbnModel(isbn)));
         step("Добавление книги в коллекцию", () -> {
-            given()
-                    .spec(requestSpec)
+            given(requestSpec)
                     .header("Authorization", "Bearer " + token)
                     .body(bookRequest)
                     .when()
@@ -73,8 +70,7 @@ public class CollectionTest extends TestBase {
         deleteBookRequest.setUserId(userId);
         deleteBookRequest.setIsbn(isbn);
         step("Удаление книги из коллекции", () -> {
-            given()
-                    .spec(requestSpec)
+            given(requestSpec)
                     .header("Authorization", "Bearer " + token)
                     .body(deleteBookRequest)
                     .when()
