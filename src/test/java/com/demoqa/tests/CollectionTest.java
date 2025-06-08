@@ -22,9 +22,7 @@ public class CollectionTest extends TestBase {
     @Test
     void addBookToCollection_WithDeleteBook_Test() {
         // 1. Аутентификация
-        LoginBodyModel authData = new LoginBodyModel();
-        authData.setUserName("test123456");
-        authData.setPassword("Test123456@");
+        LoginBodyModel authData = new LoginBodyModel("test123456","Test123456@");
 
         LoginResponseModel authResponse = step("Аутентификация пользователя", () ->
                 given(requestSpec)
