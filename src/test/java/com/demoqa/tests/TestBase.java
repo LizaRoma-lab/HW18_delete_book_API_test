@@ -34,6 +34,8 @@ public class TestBase {
     @BeforeEach
     void addAllureListener() {
         SelenideLogger.addListener("allure", new AllureSelenide());
+        System.setProperty("selenide.remote.allowInsecure", "true");
+        System.setProperty("selenide.remote.ssl-protocol", "TLS");
     }
 
     @AfterEach

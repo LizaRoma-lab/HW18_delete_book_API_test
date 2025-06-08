@@ -41,7 +41,19 @@ public class CollectionTest extends TestBase {
         String userId = authResponse.getUserId();
         String token = authResponse.getToken();
 
-        // 2. Добавление книги в коллекцию
+        // 2. Очистка коллекции книг
+        step("Очистка коллекции книг", () -> {
+            given()
+                    .spec(requestSpec)
+                    .header("Authorization", "Bearer " + token)
+                    .queryParam("UserId", userId)
+                    .when()
+                    .delete("/BookStore/v1/Books")
+                    .then()
+                    .spec(success204Spec);
+        });
+
+        // 3. Добавление книги в коллекцию
         AddBookRequestModel bookRequest = new AddBookRequestModel();
         bookRequest.setUserId(userId);
         bookRequest.setCollectionOfIsbns(List.of(new IsbnModel(isbn)));
@@ -56,7 +68,7 @@ public class CollectionTest extends TestBase {
                     .spec(success201Spec);
         });
 
-        // 3. Удаление книги из коллекции
+        // 4. Удаление книги из коллекции
         DeleteBookRequestModel deleteBookRequest = new DeleteBookRequestModel();
         deleteBookRequest.setUserId(userId);
         deleteBookRequest.setIsbn(isbn);
@@ -71,7 +83,7 @@ public class CollectionTest extends TestBase {
                     .spec(success204Spec);
         });
 
-        // 4. Проверка в UI, что книга удалена
+        // 5. Проверка в UI, что книга удалена
         step("Проверка в UI отсутствия книг", () -> {
             open("/favicon.ico");
             getWebDriver().manage().addCookie(new Cookie("userID", userId));
