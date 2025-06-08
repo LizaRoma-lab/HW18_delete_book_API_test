@@ -1,6 +1,8 @@
 package com.demoqa.tests;
 
 import com.demoqa.models.*;
+import com.demoqa.steps.AccountApiSteps;
+import com.demoqa.steps.BookStoreApiSteps;
 import io.qameta.allure.Allure;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
@@ -14,68 +16,36 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static com.demoqa.specs.Specs.*;
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.given;
 
 public class CollectionTest extends TestBase {
+    private final AccountApiSteps accountApi = new AccountApiSteps();
+    private final BookStoreApiSteps bookStoreApi = new BookStoreApiSteps();
+
     @Test
     void addBookToCollection_WithDeleteBook_Test() {
         // 1. Аутентификация
-        LoginBodyModel authData = new LoginBodyModel("test123456","Test123456@");
-
-        LoginResponseModel authResponse = step("Аутентификация пользователя", () ->
-                given(requestSpec)
-                        .body(authData)
-                        .when()
-                        .post("/Account/v1/Login")
-                        .then()
-                        .spec(success200Spec)
-                        .extract().as(LoginResponseModel.class)
-        );
+        LoginBodyModel authData = new LoginBodyModel("test123456", "Test123456@");
+        LoginResponseModel authResponse = accountApi.login(authData);
 
         String isbn = "9781449365035";
         String userId = authResponse.getUserId();
         String token = authResponse.getToken();
 
         // 2. Очистка коллекции книг
-        step("Очистка коллекции книг", () -> {
-            given(requestSpec)
-                    .header("Authorization", "Bearer " + token)
-                    .queryParam("UserId", userId)
-                    .when()
-                    .delete("/BookStore/v1/Books")
-                    .then()
-                    .spec(success204Spec);
-        });
+        bookStoreApi.cleanBooks(userId, token);
 
         // 3. Добавление книги в коллекцию
         AddBookRequestModel bookRequest = new AddBookRequestModel();
         bookRequest.setUserId(userId);
         bookRequest.setCollectionOfIsbns(List.of(new IsbnModel(isbn)));
-        step("Добавление книги в коллекцию", () -> {
-            given(requestSpec)
-                    .header("Authorization", "Bearer " + token)
-                    .body(bookRequest)
-                    .when()
-                    .post("/BookStore/v1/Books")
-                    .then()
-                    .spec(success201Spec);
-        });
+        bookStoreApi.addBook(bookRequest, token);
 
         // 4. Удаление книги из коллекции
         DeleteBookRequestModel deleteBookRequest = new DeleteBookRequestModel();
         deleteBookRequest.setUserId(userId);
         deleteBookRequest.setIsbn(isbn);
-        step("Удаление книги из коллекции", () -> {
-            given(requestSpec)
-                    .header("Authorization", "Bearer " + token)
-                    .body(deleteBookRequest)
-                    .when()
-                    .delete("/BookStore/v1/Book")
-                    .then()
-                    .spec(success204Spec);
-        });
+        bookStoreApi.deleteBook(deleteBookRequest, token);
 
         // 5. Проверка в UI, что книга удалена
         step("Проверка в UI отсутствия книг", () -> {
@@ -87,8 +57,8 @@ public class CollectionTest extends TestBase {
             open("/profile");
             $(".rt-noData").shouldHave(text("No rows found"));
             byte[] screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.BYTES);
-            Allure.addAttachment("Скриншот после проверки", "image/png", new ByteArrayInputStream(screenshot), "png");
+            Allure.addAttachment("Скриншот после проверки", "image/png",
+                    new ByteArrayInputStream(screenshot), "png");
         });
     }
 }
-
