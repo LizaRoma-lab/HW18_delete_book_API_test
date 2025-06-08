@@ -10,11 +10,11 @@ import org.openqa.selenium.TakesScreenshot;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static com.demoqa.specs.ApiSpec.*;
+import static com.demoqa.specs.Specs.*;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 

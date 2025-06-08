@@ -1,7 +1,6 @@
 package com.demoqa.specs;
 
 import io.restassured.builder.ResponseSpecBuilder;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
@@ -11,7 +10,7 @@ import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 import static io.restassured.http.ContentType.JSON;
 
-public class ApiSpec {
+public class Specs {
     public static RequestSpecification requestSpec = with()
             .relaxedHTTPSValidation()
             .filter(withCustomTemplates())

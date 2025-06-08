@@ -1,6 +1,5 @@
 package com.demoqa.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data

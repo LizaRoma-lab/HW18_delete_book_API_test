@@ -2,9 +2,7 @@ package com.demoqa.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.logevents.SelenideLogger;
 import com.demoqa.helpers.Attachments;
-import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +27,6 @@ public class TestBase {
         System.setProperty("selenide.remote.allowInsecure", "true");
         System.setProperty("selenide.remote.ssl-protocol", "TLSv1.2");
 
-        // Capabilities
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("selenoid:options", Map.<String, Object>of(
                 "enableVNC", true,
