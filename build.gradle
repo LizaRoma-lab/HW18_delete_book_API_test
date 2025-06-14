@@ -28,7 +28,6 @@ allure {
 
 dependencies {
     testImplementation(
-            'org.seleniumhq.selenium:selenium-devtools-v85:4.13.0',
             "com.codeborne:selenide:7.6.1",
             "io.qameta.allure:allure-selenide:2.29.1",
             "io.rest-assured:rest-assured:$restAssuredVersion",
@@ -38,8 +37,7 @@ dependencies {
             'com.fasterxml.jackson.core:jackson-databind:2.13.0',
             'org.assertj:assertj-core:3.24.2',
             "org.junit.jupiter:junit-jupiter:5.11.4",
-            'org.slf4j:slf4j-simple:2.0.7',
-            'org.seleniumhq.selenium:selenium-java:4.15.0'
+            'org.slf4j:slf4j-simple:2.0.7'
     )
 }
 
@@ -54,11 +52,6 @@ tasks.withType(Test) {
     }
 }
 
-task simple_test(type: Test) {
-    useJUnitPlatform {
-        includeTags("simple")
-    }
-}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
