@@ -2,7 +2,9 @@ package com.demoqa.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import com.demoqa.helpers.Attachments;
+import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,14 +39,15 @@ public class TestBase {
 
     @BeforeEach
     void initListeners() {
-        Attachments.initSelenideListener(); // Инициализация Allure listener
+//        System.setProperty("selenide.remote", "http://localhost:4444/wd/hub");
+        SelenideLogger.addListener("allure", new AllureSelenide());
     }
 
     @AfterEach
     void addAttachments() {
-        Attachments.addScreenshot();
-        Attachments.addPageSource();
-        Attachments.addBrowserConsoleLogs();
+        Attachments.screenshotAs("Last screenshot");
+        Attachments.pageSource();
+        Attachments.browserConsoleLogs();
         Attachments.addVideo();
         Selenide.closeWebDriver();
     }
