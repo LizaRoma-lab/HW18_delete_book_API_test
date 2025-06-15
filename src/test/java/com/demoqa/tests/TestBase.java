@@ -26,8 +26,8 @@ public class TestBase {
         Configuration.browserSize = "1920x1080";
 
         // SSL настройки
-        System.setProperty("selenide.remote.allowInsecure", "true");
-        System.setProperty("selenide.remote.ssl-protocol", "TLSv1.2");
+//        System.setProperty("selenide.remote.allowInsecure", "true");
+//        System.setProperty("selenide.remote.ssl-protocol", "TLSv1.2");
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("selenoid:options", Map.<String, Object>of(
@@ -39,7 +39,6 @@ public class TestBase {
 
     @BeforeEach
     void initListeners() {
-//        System.setProperty("selenide.remote", "http://localhost:4444/wd/hub");
         SelenideLogger.addListener("allure", new AllureSelenide());
     }
 
