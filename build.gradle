@@ -42,7 +42,7 @@ dependencies {
 }
 
 tasks.withType(Test) {
-    useJUnitPlatform()
+    //useJUnitPlatform()
     systemProperties(System.getProperties())
     testLogging {
         lifecycle {
@@ -73,5 +73,10 @@ tasks.withType(Test) {
             events "started", "skipped", "failed", "standard_error", "standard_out"
             exceptionFormat "short"
         }
+    }
+}
+task property_test(type: Test) {
+    useJUnitPlatform{
+        includeTags("property")
     }
 }
