@@ -25,10 +25,6 @@ public class TestBase {
         Configuration.browser = "chrome";
         Configuration.browserSize = "1920x1080";
 
-        // SSL настройки
-//        System.setProperty("selenide.remote.allowInsecure", "true");
-//        System.setProperty("selenide.remote.ssl-protocol", "TLSv1.2");
-
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("selenoid:options", Map.<String, Object>of(
                 "enableVNC", true,
