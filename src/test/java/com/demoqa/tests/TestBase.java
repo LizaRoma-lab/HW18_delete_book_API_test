@@ -16,21 +16,37 @@ import java.util.Map;
 public class TestBase {
     @BeforeAll
     static void setup() {
-        // Базовые настройки
+
         Configuration.baseUrl = "https://demoqa.com";
         RestAssured.baseURI = "https://demoqa.com";
 
-        // Настройки удаленного драйвера
-        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
-        Configuration.browser = "chrome";
-        Configuration.browserSize = "1920x1080";
+        String browser = System.getProperty("browser", "chrome");
+        String browserVersion = System.getProperty("browserVersion");
+        String remoteUrl = System.getProperty("remoteUrl");
+        String screenResolution = System.getProperty("screenResolution", "1920x1080");
 
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("selenoid:options", Map.<String, Object>of(
-                "enableVNC", true,
-                "enableVideo", true
-        ));
-        Configuration.browserCapabilities = capabilities;
+        Configuration.browser = browser;
+        Configuration.browserSize = screenResolution;
+
+        if (browserVersion != null) {
+            Configuration.browserVersion = browserVersion;
+        }
+
+        if (remoteUrl != null) {
+            Configuration.remote = remoteUrl;
+
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setCapability("selenoid:options", Map.<String, Object>of(
+                    "enableVNC", true,
+                    "enableVideo", true
+            ));
+
+            if (browserVersion != null) {
+                capabilities.setCapability("browserVersion", browserVersion);
+            }
+
+            Configuration.browserCapabilities = capabilities;
+        }
     }
 
     @BeforeEach
