@@ -20,18 +20,16 @@ public class TestBase {
         Configuration.baseUrl = "https://demoqa.com";
         RestAssured.baseURI = "https://demoqa.com";
 
-        String browser = System.getProperty("browser", "chrome");
+
+        Configuration.browser = System.getProperty("browser", "chrome");;
+        Configuration.browserSize = System.getProperty("screenResolution", "1920x1080");
+
         String browserVersion = System.getProperty("browserVersion");
-        String remoteUrl = System.getProperty("remoteUrl");
-        String screenResolution = System.getProperty("screenResolution", "1920x1080");
-
-        Configuration.browser = browser;
-        Configuration.browserSize = screenResolution;
-
         if (browserVersion != null) {
             Configuration.browserVersion = browserVersion;
         }
 
+        String remoteUrl = System.getProperty("remoteUrl");
         if (remoteUrl != null) {
             Configuration.remote = remoteUrl;
 
