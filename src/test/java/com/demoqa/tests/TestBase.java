@@ -21,30 +21,16 @@ public class TestBase {
         RestAssured.baseURI = "https://demoqa.com";
 
 
-        Configuration.browser = System.getProperty("browser", "chrome");;
-        Configuration.browserSize = System.getProperty("screenResolution", "1920x1080");
+        Configuration.browser = System.getProperty("browser", "chrome");
+        Configuration.browserVersion = System.getProperty("browserVersion", "127.0");
+        Configuration.remote = System.getProperty("remoteUrl", "https://user1:1234@selenoid.autotests.cloud/wd/hub");
 
-        String browserVersion = System.getProperty("browserVersion");
-        if (browserVersion != null) {
-            Configuration.browserVersion = browserVersion;
-        }
-
-        String remoteUrl = System.getProperty("remoteUrl");
-        if (remoteUrl != null) {
-            Configuration.remote = remoteUrl;
-
-            DesiredCapabilities capabilities = new DesiredCapabilities();
-            capabilities.setCapability("selenoid:options", Map.<String, Object>of(
-                    "enableVNC", true,
-                    "enableVideo", true
-            ));
-
-            if (browserVersion != null) {
-                capabilities.setCapability("browserVersion", browserVersion);
-            }
-
-            Configuration.browserCapabilities = capabilities;
-        }
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("selenoid:options", Map.of(
+                "enableVNC", true,
+                "enableVideo", true
+        ));
+        Configuration.browserCapabilities = capabilities;
     }
 
     @BeforeEach
